@@ -8,19 +8,18 @@ const userSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
-// FIXED: removed async/await, use promise-based approach instead
-userSchema.pre('save', function(next) {
+userSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();
-
-  bcrypt.hash(this.password, 12)
-    .then(hashed => {
-      this.password = hashed;
-      next();
-    })
-    .catch(err => next(err));
+  try {
+    const salt = await bcrypt.genSalt(12);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (err) {
+    next(err);
+  }
 });
 
-userSchema.methods.matchPassword = function(plain) {
+userSchema.methods.matchPassword = async function(plain) {
   return bcrypt.compare(plain, this.password);
 };
 
