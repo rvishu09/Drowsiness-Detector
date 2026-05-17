@@ -4,7 +4,13 @@ const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(
-    () => JSON.parse(localStorage.getItem('user')) || null
+    () => {
+      try {
+        return JSON.parse(localStorage.getItem('user')) || null;
+      } catch {
+        return null;
+      }
+    }
   );
 
   const loginUser = (userData, token) => {
