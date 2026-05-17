@@ -4,6 +4,16 @@ const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL || '/api',
 });
 
+function fullClear() {
+  localStorage.clear();
+  sessionStorage.clear();
+  document.cookie.split(';').forEach((cookie) => {
+    const name = cookie.split('=')[0].trim();
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`;
+  });
+}
+
 // Automatically attach JWT token to every request
 api.interceptors.request.use(config => {
   const token = localStorage.getItem('token');
@@ -11,12 +21,12 @@ api.interceptors.request.use(config => {
   return config;
 });
 
-// Redirect to login on 401
+// Full wipe + redirect to login on 401
 api.interceptors.response.use(
   response => response,
   error => {
     if (error.response?.status === 401) {
-      localStorage.clear();
+      fullClear();
       window.location.href = '/login';
     }
     return Promise.reject(error);

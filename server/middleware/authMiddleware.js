@@ -6,12 +6,10 @@ module.exports = (req, res, next) => {
     return res.status(401).json({ msg: 'No token' });
 
   try {
-    const decoded = jwt.verify(
-      auth.split(' ')[1], process.env.JWT_SECRET
-    );
+    const decoded = jwt.verify(auth.split(' ')[1], process.env.JWT_SECRET);
     req.user = decoded;
     next();
-  } catch {
-    res.status(401).json({ msg: 'Token invalid' });
+  } catch (err) {
+    return res.status(401).json({ msg: 'Token invalid' });
   }
 };

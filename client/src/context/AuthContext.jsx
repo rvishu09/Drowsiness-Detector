@@ -20,8 +20,19 @@ export function AuthProvider({ children }) {
   };
 
   const logoutUser = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    // Clear all localStorage
+    localStorage.clear();
+
+    // Clear all sessionStorage
+    sessionStorage.clear();
+
+    // Clear all cookies
+    document.cookie.split(';').forEach((cookie) => {
+      const name = cookie.split('=')[0].trim();
+      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`;
+    });
+
     setUser(null);
   };
 
